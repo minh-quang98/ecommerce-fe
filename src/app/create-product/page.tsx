@@ -14,10 +14,10 @@ function CreateProductPageContent() {
     const [price, setPrice] = useState('');
     const [success, setSuccess] = useState('');
     
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         const productData = { name, description, price: parseFloat(price) };
-        const result = addProduct(productData);
+        const result = await addProduct(productData);
         if(result.success) {
             setSuccess(`Sản phẩm "${name}" đã được thêm thành công!`);
             setName('');

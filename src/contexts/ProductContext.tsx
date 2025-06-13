@@ -7,13 +7,13 @@ export interface IProduct {
   id: number;
   name: string;
   price: number;
-  image: string;
+  image_url: string;
   description: string;
 }
 
 interface IProductContext {
   products: IProduct[];
-  addProduct: (productData: Omit<IProduct, 'id' | 'image'>) => any;
+  addProduct: (productData: Omit<IProduct, 'id' | 'image_url'>) => any;
 }
 
 const initialProducts: IProduct[] = [];
@@ -32,7 +32,12 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
+        console.log('check>>>', response);
+        
         const data: IProduct[] = await response.json();
+
+        console.log('check>>>dâta', data);
+        
         setProducts(data); // Cập nhật state với dữ liệu từ API
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -43,7 +48,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     fetchProducts();
   }, []); // Mảng rỗng `[]` đảm bảo useEffect chỉ chạy 1 lần
 
-  const addProduct = useCallback(async (productData: Omit<IProduct, 'id' | 'image'>) => {
+  const addProduct = useCallback(async (productData: Omit<IProduct, 'id' | 'image_url'>) => {
     // Lấy token từ localStorage
     const token = localStorage.getItem('token');
 
@@ -53,7 +58,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/products/createProduct', {
+      const response = await fetch(`${ENDPOINTS_API.PRODUCTS}/createProduct`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +75,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
       // Tùy chọn: fetch lại danh sách sản phẩm hoặc thêm sản phẩm mới vào state
       // Để đơn giản, ta sẽ fetch lại toàn bộ danh sách
-      const productsResponse = await fetch('http://localhost:5000/api/products');
+      const productsResponse = await fetch(`${ENDPOINTS_API.PRODUCTS}/getAllProducts`);
       const updatedProducts = await productsResponse.json();
       setProducts(updatedProducts);
 

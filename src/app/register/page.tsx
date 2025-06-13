@@ -15,7 +15,7 @@ export default function RegisterPage() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         setError('');
         setSuccess('');
@@ -23,7 +23,7 @@ export default function RegisterPage() {
             setError('Mật khẩu xác nhận không khớp.');
             return;
         }
-        const result = register(name, email, password);
+        const result = await register(name, email, password);
         if(result.success) {
             setSuccess('Đăng ký thành công! Đang chuyển đến trang đăng nhập...');
             setTimeout(() => router.push('/login'), 1000);

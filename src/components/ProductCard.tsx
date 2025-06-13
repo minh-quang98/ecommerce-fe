@@ -13,7 +13,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out">
-      <img className="w-full h-56 object-cover" src={product.image} alt={product.name} />
+      <img className="w-full h-56 object-cover" src={product.image_url} alt={product.name} />
       <div className="p-6">
         <h3 className="text-xl font-semibold text-gray-800 mb-2 truncate">{product.name}</h3>
         <p className="text-gray-600 mb-4 h-12 overflow-hidden">{product.description}</p>

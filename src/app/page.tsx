@@ -5,6 +5,7 @@ import ProductCard from '@/components/ProductCard';
 
 export default function HomePage() {
   const { products } = useProducts();
+  console.log('check>>products', products);
   
   return (
     <div className="container mx-auto px-6 py-8 min-h-lvh">

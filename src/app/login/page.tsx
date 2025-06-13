@@ -12,10 +12,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError('');
-    const result = login(email, password);
+    const result = await login(email, password);
     if (result.success) {
       router.push('/'); // Chuyển về trang chủ sau khi đăng nhập thành công
     } else {

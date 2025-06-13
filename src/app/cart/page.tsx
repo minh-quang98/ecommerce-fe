@@ -49,7 +49,7 @@ export default function CartPage() {
             {cartItems.map(item => (
               <div key={item.id} className="flex items-center justify-between border-b pb-4">
                 <div className="flex items-center">
-                  <img className="w-20 h-20 object-cover rounded-md" src={item.image} alt={item.name} />
+                  <img className="w-20 h-20 object-cover rounded-md" src={item.image_url} alt={item.name} />
                   <div className="ml-4">
                     <h2 className="font-bold text-lg text-gray-800">{item.name}</h2>
                     <p className="text-gray-600">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</p>

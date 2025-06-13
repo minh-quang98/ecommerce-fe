@@ -39,17 +39,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { success: true };
     } else {
       // Xử lý lỗi
-      return { success: false };
+      const errorData = await response.json(); // Lấy thông tin lỗi từ response
+      return { success: false, message: errorData.message };
     }
   }, [users]);
 
   const register = useCallback(async (name: string, email: string, password: string) => {
-    // if (users.some(u => u.email === email)) {
-    //   return { success: false, message: 'Email này đã được sử dụng.' };
-    // }
-    // setUsers(prev => [...prev, { name, email, password }]);
-    // return { success: true };
-    const response = await fetch(`${ENDPOINTS_API.AUTH}/register`, {
+    const response = await fetch(`${ENDPOINTS_API.AUTH}/register`, {  // Đặt trong dấu nháy
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password })
@@ -59,7 +55,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // const data = await response.json();
       return { success: true };
     } else {
-      return { success: false };
+      const errorData = await response.json(); // Lấy thông tin lỗi từ response
+      return { success: false, error: errorData }; // Trả về thông tin lỗi
     }
   }, []);
 
