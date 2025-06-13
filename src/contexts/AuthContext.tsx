@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useContext, createContext, useMemo, useCallback } from 'react';
+import { ENDPOINTS_API } from '../constants/constants';
 
 // Định nghĩa các kiểu dữ liệu (Interfaces)
 interface IUser {
@@ -10,9 +11,9 @@ interface IUser {
 
 interface IAuthContext {
   user: IUser | null;
-  login: (email: string, password: string) => { success: boolean; message?: string };
+  login: (email: string, password: string) => any;
   logout: () => void;
-  register: (name: string, email: string, password: string) => { success: boolean; message?: string };
+  register: (name: string, email: string, password: string) => any;
 }
 
 // Khởi tạo Context với kiểu đã định nghĩa
@@ -22,25 +23,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<IUser | null>(null);
   const [users, setUsers] = useState<any[]>([]); // Trong dự án thực tế, đây sẽ là kiểu User từ database
 
-  const login = useCallback((email: string, password: string) => {
-    const foundUser = users.find(u => u.email === email && u.password === password);
-    if (foundUser) {
-      setUser({ email: foundUser.email, name: foundUser.name });
+  const login = useCallback(async (email: string, password: string) => {
+    const response = await fetch(`${ENDPOINTS_API.AUTH}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      // Lưu token vào localStorage
+      localStorage.setItem('token', data.token);
+      // Lưu thông tin user vào state
+      setUser(data.user);
       return { success: true };
+    } else {
+      // Xử lý lỗi
+      return { success: false };
     }
-    return { success: false, message: 'Email hoặc mật khẩu không đúng.' };
   }, [users]);
 
-  const register = useCallback((name: string, email: string, password: string) => {
-    if (users.some(u => u.email === email)) {
-      return { success: false, message: 'Email này đã được sử dụng.' };
+  const register = useCallback(async (name: string, email: string, password: string) => {
+    // if (users.some(u => u.email === email)) {
+    //   return { success: false, message: 'Email này đã được sử dụng.' };
+    // }
+    // setUsers(prev => [...prev, { name, email, password }]);
+    // return { success: true };
+    const response = await fetch(`${ENDPOINTS_API.AUTH}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    if (response.ok) {
+      // const data = await response.json();
+      return { success: true };
+    } else {
+      return { success: false };
     }
-    setUsers(prev => [...prev, { name, email, password }]);
-    return { success: true };
-  }, [users]);
+  }, []);
 
   const logout = useCallback(() => {
     setUser(null);
+    localStorage.removeItem('token');
   }, []);
 
   const value = useMemo(() => ({ user, login, logout, register }), [user, login, logout, register]);

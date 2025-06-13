@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useContext, createContext, useMemo, useCallback, useEffect } from 'react';
-
+import { ENDPOINTS_API } from '../constants/constants';
 // Định nghĩa và export interface cho Product để các file khác có thể sử dụng
 export interface IProduct {
   id: number;
@@ -28,7 +28,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     const fetchProducts = async () => {
       try {
         // URL của backend API
-        const response = await fetch('http://localhost:5000/api/products/getAllProducts');
+        const response = await fetch(`${ENDPOINTS_API.PRODUCTS}/getAllProducts`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -44,43 +44,43 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   }, []); // Mảng rỗng `[]` đảm bảo useEffect chỉ chạy 1 lần
 
   const addProduct = useCallback(async (productData: Omit<IProduct, 'id' | 'image'>) => {
-        // Lấy token từ localStorage
-        const token = localStorage.getItem('token');
-        
-        if (!token) {
-            console.error("No token found. User is not authenticated.");
-            return { success: false, message: "Bạn cần đăng nhập để thực hiện việc này." };
-        }
+    // Lấy token từ localStorage
+    const token = localStorage.getItem('token');
 
-        try {
-            const response = await fetch('http://localhost:5000/api/products/createProduct', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Gắn token vào header
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(productData)
-            });
+    if (!token) {
+      console.error("No token found. User is not authenticated.");
+      return { success: false, message: "Bạn cần đăng nhập để thực hiện việc này." };
+    }
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create product');
-            }
-            
-            // Tùy chọn: fetch lại danh sách sản phẩm hoặc thêm sản phẩm mới vào state
-            // Để đơn giản, ta sẽ fetch lại toàn bộ danh sách
-            const productsResponse = await fetch('http://localhost:5000/api/products');
-            const updatedProducts = await productsResponse.json();
-            setProducts(updatedProducts);
+    try {
+      const response = await fetch('http://localhost:5000/api/products/createProduct', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Gắn token vào header
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(productData)
+      });
 
-            return { success: true, message: "Thêm mới thành công" };
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create product');
+      }
 
-        } catch (error) {
-            console.error("Failed to create product:", error);
-            return { success: false, message: "" };
-        }
-    }, []);
+      // Tùy chọn: fetch lại danh sách sản phẩm hoặc thêm sản phẩm mới vào state
+      // Để đơn giản, ta sẽ fetch lại toàn bộ danh sách
+      const productsResponse = await fetch('http://localhost:5000/api/products');
+      const updatedProducts = await productsResponse.json();
+      setProducts(updatedProducts);
+
+      return { success: true, message: "Thêm mới thành công" };
+
+    } catch (error) {
+      console.error("Failed to create product:", error);
+      return { success: false, message: "" };
+    }
+  }, []);
 
   const value = useMemo(() => ({ products, addProduct }), [products, addProduct]);
 
