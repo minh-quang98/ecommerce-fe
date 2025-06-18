@@ -25,19 +25,17 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
   // Dùng useEffect để gọi API
   useEffect(() => {
-    const fetchProducts = async () => {
+    fetchProducts();
+  }, []); // Mảng rỗng `[]` đảm bảo useEffect chỉ chạy 1 lần
+
+  const fetchProducts = async () => {
       try {
         // URL của backend API
         const response = await fetch(`${ENDPOINTS_API.PRODUCTS}/getAllProducts`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        console.log('check>>>', response);
-        
         const data: IProduct[] = await response.json();
-
-        console.log('check>>>dâta', data);
-        
         setProducts(data); // Cập nhật state với dữ liệu từ API
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -45,8 +43,6 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    fetchProducts();
-  }, []); // Mảng rỗng `[]` đảm bảo useEffect chỉ chạy 1 lần
 
   const addProduct = useCallback(async (productData: Omit<IProduct, 'id' | 'image_url'>) => {
     // Lấy token từ localStorage

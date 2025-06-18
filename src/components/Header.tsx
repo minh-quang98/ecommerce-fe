@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react'; // <-- Import thêm hooks
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShoppingCart, User, PlusCircle, LogIn, LogOut, UserPlus, Package, Home } from 'lucide-react';
@@ -10,11 +11,31 @@ export default function Header() {
   const { user, logout } = useAuth();
   const { itemCount } = useCart();
   const router = useRouter();
+  
+  // State để quản lý việc đóng/mở menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
     logout();
+    setIsMenuOpen(false); // Đóng menu sau khi đăng xuất
     router.push('/');
   };
+
+  // Logic để đóng menu khi click ra bên ngoài
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    // Thêm event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    // Dọn dẹp event listener khi component unmount
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -40,18 +61,28 @@ export default function Header() {
               </span>
             )}
           </Link>
+
+          {/* === PHẦN CODE ĐƯỢC THAY ĐỔI === */}
           {user ? (
-            <div className="relative group">
-              <button className="flex items-center text-gray-600">
+            <div className="relative" ref={menuRef}>
+              {/* Nút này giờ sẽ toggle state khi được click */}
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                className="flex items-center text-gray-600"
+              >
                 <User className="h-6 w-6" />
                 <span className="ml-2 hidden md:inline">{user.name}</span>
               </button>
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20 hidden group-hover:block">
-                 <a onClick={handleLogout} className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white cursor-pointer">
-                    <LogOut className="inline-block w-4 h-4 mr-2" />
-                    Đăng xuất
-                 </a>
-              </div>
+              
+              {/* Menu sẽ hiển thị dựa trên state isMenuOpen */}
+              {isMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20">
+                   <a onClick={handleLogout} className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white cursor-pointer">
+                      <LogOut className="inline-block w-4 h-4 mr-2" />
+                      Đăng xuất
+                   </a>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex items-center space-x-2">

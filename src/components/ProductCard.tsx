@@ -23,7 +23,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </p>
           <button
             onClick={() => addToCart(product)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center"
+            className="bg-indigo-600 text-white cursor-pointer px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center"
           >
             <ShoppingCart className="h-5 w-5 mr-2" /> Thêm
           </button>

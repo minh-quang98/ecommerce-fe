@@ -2,6 +2,7 @@
 
 import React, { useState, useContext, createContext, useMemo, useCallback } from 'react';
 import { IProduct } from './ProductContext';
+import { ENDPOINTS_API } from '@/constants/constants';
 
 // Định nghĩa kiểu cho một item trong giỏ hàng
 export interface ICartItem extends IProduct {
@@ -23,7 +24,36 @@ const CartContext = createContext<ICartContext | null>(null);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<ICartItem[]>([]);
 
-  const addToCart = useCallback((product: IProduct) => {
+  const addToCart = useCallback(async (product: IProduct) => {
+    try {
+      // Lấy token từ localStorage
+      const token = localStorage.getItem('token');
+      const dataUser = JSON.parse(localStorage.getItem('dataUser') || '');
+      console.log('check>>token', token);
+      
+      if (!token) {
+        console.error("No token found. User is not authenticated.");
+        return { success: false, message: "Bạn cần đăng nhập để thực hiện việc này." };
+      }
+      const response = await fetch(`${ENDPOINTS_API.ORDER}/addProductToCart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Gắn token vào header
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          idProduct: product.id,
+          price: product.price,
+          idCustomer: dataUser?.id || ''
+        })
+      })
+
+      console.log('check>>', response);
+      
+    } catch (err) {
+
+    }
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       if (existingItem) {

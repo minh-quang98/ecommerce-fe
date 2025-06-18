@@ -1,9 +1,11 @@
+
 import { Inter } from 'next/font/google';
 import './globals.css'; // File CSS global, nơi bạn import Tailwind CSS
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ProductProvider } from '@/contexts/ProductContext';
 import { CartProvider } from '@/contexts/CartContext';
 import Header from '@/components/Header';
+import { ToastProvider } from '@/contexts/ToastContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,19 +22,21 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={inter.className}>
-        <AuthProvider>
-          <ProductProvider>
-            <CartProvider>
-              <div className="bg-gray-100 min-h-screen font-sans">
-                <Header />
-                <main>{children}</main>
-                <footer className="bg-gray-800 text-white text-center p-4 mt-8">
+        <ToastProvider>
+          <AuthProvider>
+            <ProductProvider>
+              <CartProvider>
+                <div className="bg-gray-100 min-h-screen font-sans">
+                  <Header />
+                  <main className='min-h-screen'>{children}</main>
+                  <footer className="bg-gray-800 text-white text-center p-4 mt-8">
                     <p>&copy; 2024 NextShop. All rights reserved.</p>
-                </footer>
-              </div>
-            </CartProvider>
-          </ProductProvider>
-        </AuthProvider>
+                  </footer>
+                </div>
+              </CartProvider>
+            </ProductProvider>
+          </AuthProvider>
+        </ToastProvider>
       </body>
     </html>
   );
